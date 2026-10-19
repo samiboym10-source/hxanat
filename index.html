@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hxanat Mezamran</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: #f0f2f5; color: #1a1a1a; }
+  .container { max-width: 700px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 22px; margin: 16px 0; text-align: center; }
+  h2 { font-size: 18px; margin: 20px 0 10px; }
+  .card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  button { font-family: inherit; font-size: 16px; border: none; border-radius: 8px; padding: 12px 16px; cursor: pointer; transition: 0.15s; }
+  .btn-primary { background: #007aff; color: #fff; width: 100%; }
+  .btn-primary:active { background: #0060cc; }
+  .btn-small { background: #e5e5ea; color: #1a1a1a; padding: 8px 12px; font-size: 14px; }
+  .btn-danger { background: #ff3b30; color: #fff; padding: 8px 12px; font-size: 14px; }
+  .btn-admin { background: #ff9500; color: #fff; padding: 8px 12px; font-size: 14px; }
+  .btn-green { background: #34c759; color: #fff; width: 100%; margin-top: 10px; }
+  .btn-red { background: #ff3b30; color: #fff; width: 100%; margin-top: 6px; font-size: 14px; }
+  .btn-whatsapp { background: #25D366; color: #fff; width: 100%; margin-top: 10px; font-weight: 600; }
+  .btn-back { background: none; color: #007aff; font-size: 16px; padding: 8px 0; margin-bottom: 8px; border: none; text-align: left; width: auto; cursor: pointer; }
+  input, select { font-family: inherit; font-size: 16px; width: 100%; padding: 12px; border: 1px solid #d1d1d6; border-radius: 8px; margin-bottom: 10px; background: #fff; }
+  .day-btn { display: block; width: 100%; text-align: left; background: #fff; border: 1px solid #e5e5ea; border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; font-size: 16px; color: #1a1a1a; cursor: pointer; }
+  .day-btn:active { background: #f0f2f5; }
+  .day-btn .date-label { font-weight: 600; }
+  .day-btn .day-name { color: #8e8e93; font-size: 14px; margin-left: 6px; }
+  .day-btn .summary { font-size: 13px; color: #8e8e93; margin-top: 4px; }
+  .person-row { display: flex; flex-direction: column; padding: 12px 0; border-bottom: 1px solid #f0f2f5; }
+  .person-row:last-child { border-bottom: none; }
+  .person-top { display: flex; justify-content: space-between; align-items: center; }
+  .person-name { font-weight: 600; font-size: 16px; }
+  .person-name.clickable { cursor: pointer; color: #007aff; }
+  .person-meta { font-size: 13px; color: #8e8e93; margin-top: 2px; word-break: break-word; }
+  .status-btns { display: flex; gap: 6px; margin-left: 8px; }
+  .status-btns button { padding: 8px 10px; font-size: 13px; border-radius: 8px; background: #e5e5ea; color: #1a1a1a; min-width: 36px; }
+  .status-btns button.active-green { background: #34c759; color: #fff; }
+  .status-btns button.active-red { background: #ff3b30; color: #fff; }
+  .status-btns button.active-yellow { background: #ffcc00; color: #1a1a1a; }
+  .status-btns button.anmald { background: #8e8e93; color: #fff; }
+  .hidden { display: none !important; }
+  .login-box { max-width: 360px; margin: 60px auto; }
+  .error { color: #ff3b30; font-size: 14px; margin-top: 8px; }
+  .tab-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab-bar button { flex: 1; background: #e5e5ea; color: #1a1a1a; font-size: 13px; padding: 10px; min-width: 70px; cursor: pointer; }
+  .tab-bar button.active { background: #007aff; color: #fff; }
+  .empty { color: #8e8e93; font-size: 14px; text-align: center; padding: 16px; }
+  .parent-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f2f5; flex-wrap: wrap; gap: 8px; }
+  .parent-info { flex: 1; min-width: 0; }
+  .parent-name { font-weight: 600; font-size: 16px; }
+  .parent-name.admin-name { color: #ff9500; }
+  .parent-meta { font-size: 13px; color: #8e8e93; margin-top: 2px; }
+  .child-list { font-size: 13px; color: #555; margin-top: 4px; }
+  .reason-box { margin-top: 10px; }
+  .reason-label { font-size: 13px; color: #8e8e93; display: block; margin-bottom: 4px; }
+  .ti { color: #8e8e93; }
+  .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .edit-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 100; }
+  .edit-modal.hidden { display: none; }
+  .edit-modal .card { width: 100%; max-width: 400px; margin: 0; max-height: 90vh; overflow-y: auto; }
+  .edit-modal h3 { margin: 0 0 12px; font-size: 18px; }
+  .edit-modal .btn-row { display: flex; gap: 8px; margin-top: 8px; }
+  .edit-modal .btn-row button { flex: 1; }
+  .reported-box { background: #fff8e6; border-left: 4px solid #ff9500; padding: 8px 12px; border-radius: 6px; margin-top: 6px; font-size: 13px; }
+  .reported-box b { color: #ff9500; }
+  .submitted-box { background: #e6ffe6; border-left: 4px solid #34c759; padding: 8px 12px; border-radius: 6px; margin-top: 10px; font-size: 13px; color: #1a7a1a; }
+  .login-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .login-tabs button { flex: 1; padding: 12px; font-size: 15px; background: #e5e5ea; color: #1a1a1a; border-radius: 8px; cursor: pointer; }
+  .login-tabs button.active { background: #007aff; color: #fff; }
+  .super-badge { display: inline-block; background: #ff9500; color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+  .info-box { background: #e6f0ff; border-left: 4px solid #007aff; padding: 10px 12px; border-radius: 6px; font-size: 13px; color: #004a99; margin-bottom: 12px; }
+  .loading { text-align: center; padding: 20px; color: #8e8e93; }
+</style>
+</head>
+<body>
+
+<div id="loginView" class="login-box">
+  <div class="card">
+    <div class="login-tabs">
+      <button id="tabPhone" class="active" onclick="switchLogin('phone')">📱 Telefon</button>
+      <button id="tabAdmin" onclick="switchLogin('admin')">👑 Admin</button>
+    </div>
+    <div id="phoneLogin">
+      <input type="text" id="phoneInput" placeholder="Telefonnummer / ቁጽሪ ተሌፎን">
+      <button class="btn-primary" onclick="loginPhone()">Logga in / እቶ</button>
+      <div id="phoneError" class="error hidden">Numret finns inte – kontakta admin<br><span class="ti">ቁጽሪ ኣይተረኸበን – ንኣድሚን ተራኸብ</span></div>
+    </div>
+    <div id="adminLogin" class="hidden">
+      <input type="password" id="adminInput" placeholder="Lösenord / መእተዊ ቃል">
+      <button class="btn-primary" onclick="loginAdmin()">Logga in / እቶ</button>
+      <div id="adminError" class="error hidden">Fel lösenord / ጌጋ መእተዊ ቃል</div>
+    </div>
+    <div id="loadingMsg" class="loading hidden">Laddar...</div>
+  </div>
+</div>
+
+<div id="personView" class="container hidden">
+  <h1>Hej <span id="personName"></span>! / ሰላም</h1>
+  <p style="text-align:center; color:#8e8e93; font-size:14px;">Anmäl frånvaro / ንዘይምህላው ኣፍልጥ</p>
+  <div id="personDaysList"></div>
+  <div style="margin-top:24px; text-align:center;">
+    <button class="btn-small" onclick="logout()">Logga ut / ውጻእ</button>
+  </div>
+</div>
+
+<div id="personDayView" class="container hidden">
+  <button class="btn-back" onclick="backToPersonDays()">← Tillbaka / ተመለስ</button>
+  <h1 id="personDayTitle"></h1>
+  <div id="personChildrenList"></div>
+  <button id="personSubmitBtn" class="btn-whatsapp hidden" onclick="submitAllReports()">📤 Skicka anmälan till admin</button>
+</div>
+
+<div id="adminView" class="container hidden">
+  <h1>Admin</h1>
+  <div class="tab-bar">
+    <button id="tabNarvaro" class="active" onclick="showAdminTab('narvaro')">Närvaro</button>
+    <button id="tabPersons" onclick="showAdminTab('persons')">Personer</button>
+    <button id="tabReports" onclick="showAdminTab('reports')">Anmälningar</button>
+    <button id="tabAdmins" onclick="showAdminTab('admins')">Admins</button>
+    <button id="tabSettings" onclick="showAdminTab('settings')">⚙️ Inställningar</button>
+  </div>
+  <div id="adminNarvaro">
+    <h2>Välj dag</h2>
+    <div id="adminDaysList"></div>
+  </div>
+  <div id="adminPersons" class="hidden">
+    <h2>Lägg till person</h2>
+    <div class="info-box">Bara du (super admin) kan lägga till personer.</div>
+    <div class="card">
+      <input type="text" id="newPersonName" placeholder="Personens namn">
+      <input type="tel" id="newPersonPhone" placeholder="Telefonnummer">
+      <input type="text" id="newPersonRole" placeholder="Roll (Förälder, Ledare, Hjälpreda...)">
+      <input type="text" id="newPersonChildren" placeholder="Barn (separera med komma, tom om inga)">
+      <button class="btn-primary" onclick="addPerson()">Spara person</button>
+    </div>
+    <h2>Alla personer</h2>
+    <div id="personsList"></div>
+  </div>
+  <div id="adminReports" class="hidden">
+    <h2>Anmälningar</h2>
+    <div id="reportsList"></div>
+  </div>
+  <div id="adminAdmins" class="hidden">
+    <h2>Admins</h2>
+    <div class="info-box">När du gör någon till admin öppnas WhatsApp så du kan bjuda in dem.</div>
+    <div id="adminsList"></div>
+  </div>
+  <div id="adminSettings" class="hidden">
+    <h2>⚙️ Inställningar</h2>
+    <div class="card">
+      <h3 style="margin-top:0">Anslutning till molnet</h3>
+      <div id="cloudStatus" style="padding:12px; border-radius:8px; background:#fff8e6; border-left:4px solid #ff9500; font-size:14px; margin-bottom:12px;">Tryck "Uppdatera" för att hämta senaste data.</div>
+      <button class="btn-primary" onclick="manualRefresh()">🔄 Uppdatera från molnet</button>
+      <button class="btn-primary" style="background:#ff9500; margin-top:8px;" onclick="testCloud()">📡 Testa anslutning</button>
+      <button class="btn-danger" style="margin-top:8px;" onclick="resetLocal()">🗑️ Rensa lokal data</button>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Statistik</h3>
+      <div id="statsBox" style="font-size:14px; line-height:1.8;"></div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Information</h3>
+      <p style="font-size:13px; color:#8e8e93; margin:0;">Appen sparar anmälningar och närvaro i molnet (Supabase). Alla admins ser samma data, oavsett enhet.</p>
+    </div>
+  </div>
+  <div style="margin-top:24px; text-align:center;">
+    <button class="btn-small" onclick="logout()">Logga ut</button>
+  </div>
+</div>
+
+<div id="adminDayView" class="container hidden">
+  <button class="btn-back" onclick="backToAdminDays()">← Tillbaka</button>
+  <h1 id="adminDayTitle"></h1>
+  <div id="adminPersonsList"></div>
+</div>
+
+<div id="editPersonModal" class="edit-modal hidden">
+  <div class="card">
+    <h3>Redigera person</h3>
+    <input type="text" id="editPersonName" placeholder="Namn">
+    <input type="tel" id="editPersonPhone" placeholder="Telefonnummer">
+    <input type="text" id="editPersonRole" placeholder="Roll">
+    <input type="text" id="editPersonChildren" placeholder="Barn (komma-separerade)">
+    <div class="btn-row">
+      <button class="btn-small" onclick="closeEditPerson()">Avbryt</button>
+      <button class="btn-primary" onclick="saveEditPerson()">Spara</button>
+    </div>
+  </div>
+</div>
+
+<div id="editChildModal" class="edit-modal hidden">
+  <div class="card">
+    <h3>Redigera barn</h3>
+    <input type="text" id="editChildName" placeholder="Barnets namn">
+    <div class="btn-row">
+      <button class="btn-small" onclick="closeEditChild()">Avbryt</button>
+      <button class="btn-primary" onclick="saveEditChild()">Spara</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var SUPER_ADMIN_PW = "kidusmikael12";
+var ADMIN_WHATSAPP = "46762219665";
+var SUPABASE_URL = "https://ktjuvcarwilmroescpvz.supabase.co";
+var SUPABASE_KEY = "sb_publishable_dmrxPQf6aa8nXRBh0dG21Q_vLJx_WDg";
+var db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var STORAGE_KEY = "hxanat_v31";
+var REASONS = [
+  { sv: "Sjuk", ti: "ሕማም" },
+  { sv: "Bortrest", ti: "ጉዕዞ" },
+  { sv: "Familjeskäl", ti: "ስድራ ምኽንያት" },
+  { sv: "Fotbollsträning", ti: "ስልጠና ኩዑሶ" },
+  { sv: "Annat", ti: "ካልእ" }
+];
+var DAY_NAMES = ["Söndag","Måndag","Tisdag","Onsdag","Torsdag","Fredag","Lördag"];
+var DAY_NAMES_TI = ["ሰንበት","ሰኑይ","ሰሉስ","ረቡዕ","ሓሙስ","ዓርቢ","ቀዳም"];
+var DEFAULT_PERSONS_DATA = [
+  { name: "Diyakon Sami", phone: "0735764919", role: "Super admin", children: [], isAdmin: true, isSuper: true },
+  { name: "Fnan Diyakon", phone: "0722728468", role: "Admin", children: [], isAdmin: true },
+  { name: "Yordanos Fitsium", phone: "0722891442", role: "Admin", children: ["Etsepatos Mhreteab", "Yosef Mhreteab", "Petros Mhreteab", "Sina Mhreteab"], isAdmin: true },
+  { name: "Trhas", phone: "0738971692", role: "Förälder", children: ["Nayab Mehari", "Esey Mehari"] },
+  { name: "Adiam Gebrehiwet", phone: "0723122247", role: "Förälder", children: ["Noh Filmon", "Mariana Filmon"] },
+  { name: "Selam", phone: "0762809467", role: "Förälder", children: ["Eldana", "Esrom", "Efrata"] },
+  { name: "Rigat Tekleab", phone: "0729305263", role: "Förälder", children: ["Hevean", "Milka", "Rut"] },
+  { name: "Haben Mhreteab", phone: "0737867482", role: "Förälder", children: ["Esrom Iseyas", "Rozina Iseyas"] },
+  { name: "Adhanet Musse", phone: "0728755749", role: "Förälder", children: ["Betania"] },
+  { name: "Teklu Hayle", phone: "0737638403", role: "Förälder", children: ["Yohanes Teklu"] },
+  { name: "Awet Rezene", phone: "0765895656", role: "Förälder", children: ["Harerta Awet", "Melody Awet", "Lidya Awet"] },
+  { name: "Michael Tsegay", phone: "0722751135", role: "Förälder", children: ["Lidia Michael", "Rufta Michael"] },
+  { name: "Msgana Kbrizgi", phone: "0739074059", role: "Förälder", children: ["Petros Gere", "Aryam Gere"] },
+  { name: "Awet Sium", phone: "0729381561", role: "Förälder", children: ["Noh Awet", "Sara Awet", "Hana Awet", "Siem Awet"] },
+  { name: "Gebrezgi Habte", phone: "0762836373", role: "Förälder", children: ["Mikias Gebrezgi"] },
+  { name: "Zebib", phone: "0704097650", role: "Förälder", children: ["Mekseb Maekele", "Aryam Maekele", "Aleksander Maekele"] },
+  { name: "Yekealo Ghebremedhin", phone: "0767095359", role: "Förälder", children: ["Noah Yekealo"] },
+  { name: "Habtom Teklehaymanot", phone: "0700748570", role: "Förälder", children: ["Mewasti Habtom", "Rufta Habtom"] },
+  { name: "Naxnet Sereqe", phone: "0720173303", role: "Förälder", children: ["Selina Mekonen", "Gelila Mekonen", "Siem Mekonen"] },
+  { name: "Simret", phone: "0736468568", role: "Förälder", children: ["Petros Dilom", "Efrata Dilom"] },
+  { name: "Simret Sium", phone: "0736473497", role: "Förälder", children: ["Gelila Biniyam", "Betlehem Biniyam"] },
+  { name: "Akberet", phone: "0720122949", role: "Förälder", children: ["Hyab Misgna", "Saliem Misgna", "Raei Misgna"] },
+  { name: "Adhanet", phone: "0765818004", role: "Förälder", children: ["Esawi", "Kenani"] },
+  { name: "Alem", phone: "0737030554", role: "Förälder", children: ["Natnael Okube", "Naod Okube"] },
+  { name: "Fishale", phone: "0736955386", role: "Förälder", children: ["Mikal Fishale", "Melael Fishale"] },
+  { name: "Ezgorn", phone: "0736955505", role: "Förälder", children: ["Msgana Sbhatla"] },
+  { name: "Okubay", phone: "0737011713", role: "Förälder", children: ["Natnael Okubay", "Naod Okubay"] },
+  { name: "Ykealo", phone: "0704055752", role: "Förälder", children: ["Matyas Ykealo"] },
+  { name: "Mebrahtom", phone: "0762153194", role: "Förälder", children: ["Solyana Mebrahtom", "Marta Mebrahtom"] },
+  { name: "Saba Okubay", phone: "0733992851", role: "Förälder", children: ["Aram", "Amanuel", "Abigayl"] },
+  { name: "Rahel Weldehawaryat", phone: "0728421707", role: "Förälder", children: ["Senay Teklu", "Banna Teklu"] },
+  { name: "Msgana Teklemariyam", phone: "0700394289", role: "Förälder", children: ["Winta Zeremichael", "Natan Tewoldebrhan"] },
+  { name: "Yohannes Abadi", phone: "0760975453", role: "Förälder", children: ["Melody Yohannes", "Mekseb Yohannes"] },
+  { name: "Freweini", phone: "0728430616", role: "Förälder", children: ["Matsola", "Natan"] },
+  { name: "Fetwi Melake", phone: "0700133505", role: "Förälder", children: ["Esrom Fetwi"] },
+  { name: "Lichia Kesete", phone: "0762179635", role: "Förälder", children: ["Aleksander Tedros", "Betlehem Tedros"] },
+  { name: "Meseret", phone: "0720034463", role: "Förälder", children: ["Boyz"] }
+];
+
+var data = loadData();
+var currentPerson = null;
+var currentDay = null;
+var editingPersonId = null;
+var editingChildId = null;
+
+function loadData() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  var persons = [];
+  var children = [];
+  DEFAULT_PERSONS_DATA.forEach(function(p, pi) {
+    var personId = "p" + pi;
+    var childIds = [];
+    (p.children || []).forEach(function(c, ci) {
+      var childId = personId + "_c" + ci;
+      children.push({ id: childId, name: c, personId: personId });
+      childIds.push(childId);
+    });
+    persons.push({
+      id: personId, name: p.name, phone: p.phone, role: p.role || "",
+      children: p.children || [], childIds: childIds,
+      isAdmin: p.isAdmin || false, isSuper: p.isSuper || false
+    });
+  });
+  return { persons: persons, children: children, attendance: {}, reasons: {}, reports: {}, submitted: {} };
+}
+function saveData() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {} }
+function normalizePhone(p) { return String(p || "").replace(/\D/g, ""); }
+
+function getDays() {
+  var days = [];
+  var start = new Date(2026, 8, 25);
+  var end = new Date(2027, 11, 31);
+  var d = new Date(start);
+  while (d <= end) {
+    var dow = d.getDay();
+    if (dow === 5 || dow === 6) days.push(new Date(d));
+    d.setDate(d.getDate() + 1);
+  }
+  return days;
+}
+function formatDate(d) {
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function show(id) {
+  ["loginView","personView","personDayView","adminView","adminDayView"].forEach(function(x) {
+    var el = document.getElementById(x);
+    if (el) el.classList.toggle("hidden", x !== id);
+  });
+}
+
+function switchLogin(type) {
+  document.getElementById("tabPhone").classList.toggle("active", type === "phone");
+  document.getElementById("tabAdmin").classList.toggle("active", type === "admin");
+  document.getElementById("phoneLogin").classList.toggle("hidden", type !== "phone");
+  document.getElementById("adminLogin").classList.toggle("hidden", type !== "admin");
+}
+
+// ===== SUPABASE FUNKTIONER =====
+async function loadFromCloud() {
+  try {
+    var res = await db.from("reports").select("*");
+    if (res.error) { console.error("Fel:", res.error); return false; }
+    
+    data.reports = {};
+    data.attendance = {};
+    data.reasons = {};
+    data.submitted = {};
+    
+    (res.data || []).forEach(function(r) {
+      if (!data.attendance[r.day]) data.attendance[r.day] = {};
+      if (!data.reports[r.day]) data.reports[r.day] = {};
+      if (!data.reasons[r.day]) data.reasons[r.day] = {};
+      if (!data.submitted[r.day]) data.submitted[r.day] = {};
+      data.attendance[r.day][r.child_id] = "a";
+      data.reports[r.day][r.child_id] = { personName: r.parent_name, personPhone: r.parent_phone, reason: r.reason };
+      data.reasons[r.day][r.child_id] = r.reason;
+      data.submitted[r.day][r.child_id] = true;
+    });
+
+    var res2 = await db.from("attendance").select("*");
+    if (!res2.error && res2.data) {
+      res2.data.forEach(function(a) {
+        if (!data.attendance[a.day]) data.attendance[a.day] = {};
+        data.attendance[a.day][a.child_id] = a.status;
+      });
+    }
+
+    saveData();
+    return true;
+  } catch(e) { console.error(e); return false; }
+}
+
+async function saveReportToCloud(day, childId, childName, parentName, parentPhone, reason) {
+  try {
+    var res = await db.from("reports").insert({ day: day, child_id: childId, child_name: childName, parent_name: parentName, parent_phone: parentPhone, reason: reason });
+    if (res.error) { console.error("Fel:", res.error); alert("Kunde inte spara: " + res.error.message); return false; }
+    return true;
+  } catch(e) { console.error(e); alert("Fel: " + e.message); return false; }
+}
+
+async function deleteReportFromCloud(day, childId) {
+  try {
+    var res = await db.from("reports").delete().eq("day", day).eq("child_id", childId);
+    if (res.error) console.error("Fel:", res.error);
+  } catch(e) { console.error(e); }
+}
+
+async function saveAttendanceToCloud(day, childId, status) {
+  try {
+    var res = await db.from("attendance").upsert({ day: day, child_id: childId, status: status }, { onConflict: "day,child_id" });
+    if (res.error) console.error("Fel:", res.error);
+  } catch(e) { console.error(e); }
+}
+
+async function deleteAttendanceFromCloud(day, childId) {
+  try {
+    var res = await db.from("attendance").delete().eq("day", day).eq("child_id", childId);
+    if (res.error) console.error("Fel:", res.error);
+  } catch(e) { console.error(e); }
+}
+
+// ===== LOGIN =====
+async function loginPhone() {
+  var phone = normalizePhone(document.getElementById("phoneInput").value);
+  var person = data.persons.find(function(p) { return normalizePhone(p.phone) === phone; });
+  if (!person) { document.getElementById("phoneError").classList.remove("hidden"); return; }
+  document.getElementById("loadingMsg").classList.remove("hidden");
+  await loadFromCloud();
+  document.getElementById("loadingMsg").classList.add("hidden");
+  if (person.isAdmin || person.isSuper) {
+    show("adminView");
+    showAdminTab("narvaro");
+    return;
+  }
+  currentPerson = person;
+  document.getElementById("personName").textContent = person.name;
+  show("personView");
+  showPersonDays();
+}
+
+async function loginAdmin() {
+  var pw = document.getElementById("adminInput").value.trim();
+  if (pw !== SUPER_ADMIN_PW) { document.getElementById("adminError").classList.remove("hidden"); return; }
+  document.getElementById("loadingMsg").classList.remove("hidden");
+  await loadFromCloud();
+  document.getElementById("loadingMsg").classList.add("hidden");
+  show("adminView");
+  showAdminTab("narvaro");
+}
+
+function logout() {
+  currentPerson = null;
+  currentDay = null;
+  show("loginView");
+  document.getElementById("phoneInput").value = "";
+  document.getElementById("adminInput").value = "";
+}
+
+// ===== FÖRÄLDER =====
+function showPersonDays() {
+  show("personView");
+  var list = document.getElementById("personDaysList");
+  list.innerHTML = "";
+  getDays().forEach(function(d) {
+    var key = formatDate(d);
+    var att = data.attendance[key] || {};
+    var count = 0;
+    (currentPerson.childIds || []).forEach(function(cid) { if (att[cid] === "a" || att[cid] === "f") count++; });
+    var btn = document.createElement("button");
+    btn.className = "day-btn";
+    btn.innerHTML = '<span class="date-label">' + key + '</span><span class="day-name">' + DAY_NAMES[d.getDay()] + ' / ' + DAY_NAMES_TI[d.getDay()] + '</span><div class="summary">' + (count > 0 ? "🟡 " + count + " anmälda" : "Ingen anmälan") + '</div>';
+    btn.onclick = (function(k, dd) { return function() { openPersonDay(k, dd); }; })(key, d);
+    list.appendChild(btn);
+  });
+}
+
+function openPersonDay(key, d) {
+  currentDay = key;
+  show("personDayView");
+  document.getElementById("personDayTitle").textContent = key + " (" + DAY_NAMES[d.getDay()] + ")";
+  renderPersonChildren();
+}
+function backToPersonDays() { showPersonDays(); }
+
+function renderPersonChildren() {
+  var list = document.getElementById("personChildrenList");
+  list.innerHTML = "";
+  var att = data.attendance[currentDay] || {};
+  var anyReported = false;
+  (currentPerson.childIds || []).forEach(function(cid) {
+    var child = data.children.find(function(c) { return c.id === cid; });
+    if (!child) return;
+    var status = att[child.id] || "";
+    var isReported = status === "a" || status === "f";
+    if (isReported) anyReported = true;
+    var reason = (data.reasons[currentDay] && data.reasons[currentDay][child.id]) || "";
+    var row = document.createElement("div");
+    row.className = "person-row";
+    var reasonHtml = "";
+    if (isReported) {
+      var isCustom = reason && !REASONS.some(function(r) { return r.sv === reason; }) && reason !== "";
+      var selectedReason = isCustom ? "Annat" : (reason || "");
+      reasonHtml = '<div class="reason-box"><label class="reason-label">Anledning / ምኽንያት:</label><select onchange="onReasonChange(\'' + child.id + '\', this.value)" style="margin:0"><option value="">-- Välj --</option>' + REASONS.map(function(r) { return '<option value="' + r.sv + '"' + (selectedReason === r.sv ? ' selected' : '') + '>' + r.sv + ' / ' + r.ti + '</option>'; }).join("") + '</select><div id="customReasonBox_' + child.id + '" class="' + (selectedReason === "Annat" ? '' : 'hidden') + '" style="margin-top:8px"><input type="text" placeholder="Skriv anledning" value="' + (isCustom ? escapeAttr(reason) : '') + '" oninput="setCustomReason(\'' + child.id + '\', this.value)"></div><button class="btn-red" onclick="cancelReport(\'' + child.id + '\')">❌ Ta bort anmälan</button></div>';
+    }
+    row.innerHTML = '<div class="person-top"><div class="person-name">' + escapeHtml(child.name) + '</div><div class="status-btns"><button class="' + (isReported ? '' : 'anmald') + '" onclick="toggleAbsent(\'' + child.id + '\')">' + (isReported ? '✓ Anmäld' : 'Anmäl inte') + '</button></div></div>' + reasonHtml;
+    list.appendChild(row);
+  });
+  var submitBtn = document.getElementById("personSubmitBtn");
+  if (anyReported) submitBtn.classList.remove("hidden");
+  else submitBtn.classList.add("hidden");
+}
+
+function toggleAbsent(cid) {
+  if (!data.attendance[currentDay]) data.attendance[currentDay] = {};
+  if (!data.reports[currentDay]) data.reports[currentDay] = {};
+  if (!data.submitted[currentDay]) data.submitted[currentDay] = {};
+  if (data.attendance[currentDay][cid] === "a" || data.attendance[currentDay][cid] === "f") {
+    delete data.attendance[currentDay][cid];
+    delete data.reports[currentDay][cid];
+    delete data.submitted[currentDay][cid];
+  } else {
+    data.attendance[currentDay][cid] = "a";
+    data.reports[currentDay][cid] = { personName: currentPerson.name, personPhone: currentPerson.phone };
+  }
+  saveData();
+  renderPersonChildren();
+}
+
+function cancelReport(cid) {
+  if (!confirm("Vill du ta bort anmälan?")) return;
+  delete data.attendance[currentDay][cid];
+  delete data.submitted[currentDay][cid];
+  delete data.reports[currentDay][cid];
+  deleteReportFromCloud(currentDay, cid);
+  saveData();
+  renderPersonChildren();
+}
+
+function onReasonChange(cid, reason) {
+  if (!data.reasons[currentDay]) data.reasons[currentDay] = {};
+  data.reasons[currentDay][cid] = reason;
+  saveData();
+  var box = document.getElementById("customReasonBox_" + cid);
+  if (box) {
+    if (reason === "Annat") { box.classList.remove("hidden"); var i = box.querySelector("input"); if (i) { i.value = ""; i.focus(); } }
+    else box.classList.add("hidden");
+  }
+}
+function setCustomReason(cid, value) {
+  if (!data.reasons[currentDay]) data.reasons[currentDay] = {};
+  data.reasons[currentDay][cid] = value;
+  saveData();
+}
+
+async function submitAllReports() {
+  var att = data.attendance[currentDay] || {};
+  var lines = [];
+  for (var i = 0; i < (currentPerson.childIds || []).length; i++) {
+    var cid = currentPerson.childIds[i];
+    if (att[cid] === "a" || att[cid] === "f") {
+      var child = data.children.find(function(c) { return c.id === cid; });
+      if (!child) continue;
+      var reason = (data.reasons[currentDay] && data.reasons[currentDay][cid]) || "–";
+      lines.push("👶 " + child.name + " – " + reason);
+      await saveReportToCloud(currentDay, cid, child.name, currentPerson.name, currentPerson.phone, reason);
+      if (!data.submitted[currentDay]) data.submitted[currentDay] = {};
+      data.submitted[currentDay][cid] = true;
+      if (!data.reports[currentDay]) data.reports[currentDay] = {};
+      data.reports[currentDay][cid] = { personName: currentPerson.name, personPhone: currentPerson.phone, reason: reason };
+    }
+  }
+  if (lines.length === 0) { alert("Inga anmälningar att skicka"); return; }
+  saveData();
+  renderPersonChildren();
+  var msg = "📋 Anmälan av frånvaro\n\n👤 Anmäld av: " + currentPerson.name + "\n📞 Telefon: " + currentPerson.phone + "\n📅 Datum: " + currentDay + "\n\n" + lines.join("\n");
+  window.open("https://wa.me/" + ADMIN_WHATSAPP + "?text=" + encodeURIComponent(msg), "_blank");
+  alert("✅ Skickat till admin!");
+}
+
+// ===== ADMIN =====
+function showAdminTab(tab) {
+  ["narvaro","persons","reports","admins","settings"].forEach(function(t) {
+    var el = document.getElementById("admin" + t.charAt(0).toUpperCase() + t.slice(1));
+    if (el) el.classList.toggle("hidden", t !== tab);
+    var tabEl = document.getElementById("tab" + t.charAt(0).toUpperCase() + t.slice(1));
+    if (tabEl) tabEl.classList.toggle("active", t === tab);
+  });
+  if (tab === "narvaro") renderAdminDays();
+  if (tab === "persons") renderPersonsList();
+  if (tab === "reports") renderReportsList();
+  if (tab === "admins") renderAdminsList();
+  if (tab === "settings") renderSettings();
+}
+
+function renderAdminDays() {
+  var list = document.getElementById("adminDaysList");
+  list.innerHTML = "";
+  getDays().forEach(function(d) {
+    var key = formatDate(d);
+    var att = data.attendance[key] || {};
+    var n=0, f=0, a=0;
+    Object.values(att).forEach(function(v) { if(v==="n") n++; else if(v==="f") f++; else if(v==="a") a++; });
+    var btn = document.createElement("button");
+    btn.className = "day-btn";
+    btn.innerHTML = '<span class="date-label">' + key + '</span><span class="day-name">' + DAY_NAMES[d.getDay()] + '</span><div class="summary">🟢 ' + n + ' &nbsp; 🔴 ' + f + ' &nbsp; 🟡 ' + a + '</div>';
+    btn.onclick = (function(k, dd) { return function() { openAdminDay(k, dd); }; })(key, d);
+    list.appendChild(btn);
+  });
+}
+
+function openAdminDay(key, d) {
+  currentDay = key;
+  document.getElementById("adminView").classList.add("hidden");
+  document.getElementById("adminDayView").classList.remove("hidden");
+  document.getElementById("adminDayTitle").textContent = key + " (" + DAY_NAMES[d.getDay()] + ")";
+  renderAdminChildren();
+}
+function backToAdminDays() {
+  document.getElementById("adminDayView").classList.add("hidden");
+  document.getElementById("adminView").classList.remove("hidden");
+  showAdminTab("narvaro");
+}
+
+function renderAdminChildren() {
+  var list = document.getElementById("adminPersonsList");
+  list.innerHTML = "";
+  var att = data.attendance[currentDay] || {};
+  var reports = data.reports[currentDay] || {};
+  data.children.forEach(function(child) {
+    var status = att[child.id] || "";
+    var person = data.persons.find(function(p) { return p.id === child.personId; });
+    var repInfo = reports[child.id];
+    var row = document.createElement("div");
+    row.className = "person-row";
+    var meta = person ? [person.name, person.phone].filter(Boolean).join(" · ") : "";
+    var reportedBox = "";
+    if (repInfo) {
+      reportedBox = '<div class="reported-box">🟡 <b>Anmäld av:</b> ' + escapeHtml(repInfo.personName) + ' (' + escapeHtml(repInfo.personPhone) + ')' + (repInfo.reason ? '<br><b>Anledning:</b> ' + escapeHtml(repInfo.reason) : '') + '</div>';
+    } else if (status === "a") { reportedBox = '<div class="reported-box">🟡 <b>Anmäld av admin</b></div>'; }
+    else if (status === "f") { reportedBox = '<div class="reported-box" style="background:#ffe6e6;border-color:#ff3b30;">🔴 <b>Frånvaro</b></div>'; }
+    row.innerHTML = '<div class="person-top"><div><div class="person-name clickable" onclick="openEditChild(\'' + child.id + '\')">' + escapeHtml(child.name) + ' ✏️</div>' + (meta ? '<div class="person-meta">' + escapeHtml(meta) + '</div>' : '') + '</div><div class="status-btns"><button class="' + (status==='n'?'active-green':'') + '" onclick="setStatus(\'' + child.id + '\',\'n\')">✓</button><button class="' + (status==='f'?'active-red':'') + '" onclick="setStatus(\'' + child.id + '\',\'f\')">✗</button><button class="' + (status==='a'?'active-yellow':'') + '" onclick="setStatus(\'' + child.id + '\',\'a\')">A</button></div></div>' + reportedBox;
+    list.appendChild(row);
+  });
+  var sb = document.createElement("button");
+  sb.className = "btn-whatsapp";
+  sb.textContent = "📤 Skicka närvaro till admin (WhatsApp)";
+  sb.onclick = sendReportToGroup;
+  list.appendChild(sb);
+}
+
+function setStatus(cid, status) {
+  if (!data.attendance[currentDay]) data.attendance[currentDay] = {};
+  if (data.attendance[currentDay][cid] === status) {
+    delete data.attendance[currentDay][cid];
+    deleteAttendanceFromCloud(currentDay, cid);
+  } else {
+    data.attendance[currentDay][cid] = status;
+    saveAttendanceToCloud(currentDay, cid, status);
+  }
+  saveData();
+  renderAdminChildren();
+}
+
+function sendReportToGroup() {
+  var att = data.attendance[currentDay] || {};
+  var n=0, f=0, a=0;
+  var narvarande = [], franvarande = [], anmalda = [];
+  data.children.forEach(function(c) {
+    var s = att[c.id];
+    if (s === "n") { n++; narvarande.push(c.name); }
+    else if (s === "f") { f++; franvarande.push(c.name); }
+    else if (s === "a") { a++; anmalda.push(c.name); }
+  });
+  var msg = "📋 Närvaro " + currentDay + "\n\n🟢 Närvaro (" + n + "):\n" + (narvarande.length ? narvarande.join(", ") : "–") + "\n\n🔴 Frånvaro (" + f + "):\n" + (franvarande.length ? franvarande.join(", ") : "–") + "\n\n🟡 Anmäld (" + a + "):\n" + (anmalda.length ? anmalda.join(", ") : "–");
+  window.open("https://wa.me/" + ADMIN_WHATSAPP + "?text=" + encodeURIComponent(msg), "_blank");
+}
+
+function openEditChild(childId) {
+  var child = data.children.find(function(c) { return c.id === childId; });
+  if (!child) return;
+  editingChildId = childId;
+  document.getElementById("editChildName").value = child.name;
+  document.getElementById("editChildModal").classList.remove("hidden");
+}
+function closeEditChild() {
+  document.getElementById("editChildModal").classList.add("hidden");
+  editingChildId = null;
+}
+function saveEditChild() {
+  var child = data.children.find(function(c) { return c.id === editingChildId; });
+  if (!child) return;
+  var newName = document.getElementById("editChildName").value.trim();
+  if (!newName) { alert("Fyll i namn"); return; }
+  child.name = newName;
+  var person = data.persons.find(function(p) { return p.id === child.personId; });
+  if (person) {
+    var idx = person.childIds.indexOf(editingChildId);
+    if (idx >= 0) person.children[idx] = newName;
+  }
+  saveData();
+  closeEditChild();
+  renderAdminChildren();
+  alert("✅ Sparat!");
+}
+
+function renderPersonsList() {
+  var list = document.getElementById("personsList");
+  list.innerHTML = "";
+  data.persons.forEach(function(p) {
+    var row = document.createElement("div");
+    row.className = "parent-row";
+    var badge = p.isSuper ? '<span class="super-badge">SUPER</span>' : (p.isAdmin ? '<span class="super-badge">ADMIN</span>' : "");
+    row.innerHTML = '<div class="parent-info"><div class="parent-name ' + (p.isAdmin || p.isSuper ? 'admin-name' : '') + '">' + ((p.isAdmin || p.isSuper) ? '👑 ' : '') + escapeHtml(p.name) + badge + '</div><div class="parent-meta">' + escapeHtml(p.phone) + ' ' + (p.role ? '· ' + escapeHtml(p.role) : '') + '</div>' + (p.children.length ? '<div class="child-list">👶 ' + p.children.map(function(c) { return escapeHtml(c); }).join(", ") + '</div>' : '') + '</div><div class="btn-group"><button class="btn-small" onclick="openEditPerson(\'' + p.id + '\')">✏️ Redigera</button>' + (!p.isSuper ? '<button class="btn-danger" onclick="removePerson(\'' + p.id + '\')">Ta bort</button>' : '') + '</div>';
+    list.appendChild(row);
+  });
+}
+
+function addPerson() {
+  var name = document.getElementById("newPersonName").value.trim();
+  var phone = document.getElementById("newPersonPhone").value.trim();
+  var role = document.getElementById("newPersonRole").value.trim();
+  var childrenStr = document.getElementById("newPersonChildren").value.trim();
+  if (!name || !phone) { alert("Fyll i namn och telefon!"); return; }
+  var personId = "p" + Date.now();
+  var childrenList = childrenStr ? childrenStr.split(",").map(function(c) { return c.trim(); }).filter(function(c) { return c; }) : [];
+  var childIds = [];
+  childrenList.forEach(function(c, i) {
+    var childId = personId + "_c" + i;
+    data.children.push({ id: childId, name: c, personId: personId });
+    childIds.push(childId);
+  });
+  data.persons.push({ id: personId, name: name, phone: phone, role: role, children: childrenList, childIds: childIds, isAdmin: false, isSuper: false });
+  saveData();
+  document.getElementById("newPersonName").value = "";
+  document.getElementById("newPersonPhone").value = "";
+  document.getElementById("newPersonRole").value = "";
+  document.getElementById("newPersonChildren").value = "";
+  renderPersonsList();
+}
+
+function openEditPerson(id) {
+  var p = data.persons.find(function(x) { return x.id === id; });
+  if (!p) return;
+  editingPersonId = id;
+  document.getElementById("editPersonName").value = p.name;
+  document.getElementById("editPersonPhone").value = p.phone;
+  document.getElementById("editPersonRole").value = p.role || "";
+  document.getElementById("editPersonChildren").value = (p.children || []).join(", ");
+  document.getElementById("editPersonModal").classList.remove("hidden");
+}
+function closeEditPerson() { document.getElementById("editPersonModal").classList.add("hidden"); editingPersonId = null; }
+function saveEditPerson() {
+  var p = data.persons.find(function(x) { return x.id === editingPersonId; });
+  if (!p) return;
+  p.name = document.getElementById("editPersonName").value.trim();
+  p.phone = document.getElementById("editPersonPhone").value.trim();
+  p.role = document.getElementById("editPersonRole").value.trim();
+  var childrenList = document.getElementById("editPersonChildren").value.trim().split(",").map(function(c) { return c.trim(); }).filter(function(c) { return c; });
+  data.children = data.children.filter(function(c) { return c.personId !== editingPersonId; });
+  var childIds = [];
+  childrenList.forEach(function(c, i) {
+    var childId = editingPersonId + "_c" + i;
+    data.children.push({ id: childId, name: c, personId: editingPersonId });
+    childIds.push(childId);
+  });
+  p.children = childrenList;
+  p.childIds = childIds;
+  saveData();
+  closeEditPerson();
+  renderPersonsList();
+  alert("✅ Sparat!");
+}
+
+function removePerson(id) {
+  if (!confirm("Ta bort personen?")) return;
+  var p = data.persons.find(function(x) { return x.id === id; });
+  if (p && p.isSuper) { alert("Kan inte ta bort super-admin"); return; }
+  data.children = data.children.filter(function(c) { return c.personId !== id; });
+  data.persons = data.persons.filter(function(x) { return x.id !== id; });
+  saveData();
+  renderPersonsList();
+}
+
+function renderReportsList() {
+  var list = document.getElementById("reportsList");
+  list.innerHTML = "";
+  var daysWithReports = Object.keys(data.attendance).filter(function(day) {
+    var att = data.attendance[day] || {};
+    return Object.keys(att).some(function(id) { return att[id] === "a" || att[id] === "f"; });
+  }).sort();
+  if (daysWithReports.length === 0) { list.innerHTML = '<div class="empty">Inga anmälningar än</div>'; return; }
+  daysWithReports.forEach(function(day) {
+    var att = data.attendance[day];
+    var count = Object.keys(att).filter(function(id) { return att[id] === "a" || att[id] === "f"; }).length;
+    var d = new Date(day + "T12:00:00");
+    var card = document.createElement("div");
+    card.className = "card";
+    var html = '<h3 style="margin-top:0">' + day + ' (' + DAY_NAMES[d.getDay()] + ') – 🟡 ' + count + ' anmälda</h3>';
+    Object.keys(att).filter(function(id) { return att[id] === "a" || att[id] === "f"; }).forEach(function(cid) {
+      var child = data.children.find(function(c) { return c.id === cid; });
+      if (!child) return;
+      var person = data.persons.find(function(p) { return p.id === child.personId; });
+      var repInfo = data.reports[day] && data.reports[day][cid];
+      var reason = (data.reasons[day] && data.reasons[day][cid]) || (repInfo && repInfo.reason) || "";
+      html += '<div class="person-row"><div class="person-top"><div><div class="person-name">' + escapeHtml(child.name) + '</div><div class="person-meta">' + (person ? escapeHtml(person.name) + ' · ' + escapeHtml(person.phone) : '') + '</div>' + (repInfo ? '<div class="person-meta" style="color:#ff9500">🟡 Anmäld av: ' + escapeHtml(repInfo.personName) + '</div>' : '') + (reason ? '<div class="person-meta">Anledning: ' + escapeHtml(reason) + '</div>' : '') + '</div><button class="btn-red" style="width:auto;margin:0;padding:8px 12px;font-size:13px" onclick="adminRemoveReport(\'' + day + '\',\'' + cid + '\')">❌ Ta bort</button></div></div>';
+    });
+    card.innerHTML = html;
+    list.appendChild(card);
+  });
+}
+
+function adminRemoveReport(day, cid) {
+  if (!confirm("Ta bort denna anmälan?")) return;
+  if (data.attendance[day]) delete data.attendance[day][cid];
+  if (data.reports[day]) delete data.reports[day][cid];
+  if (data.submitted[day]) delete data.submitted[day][cid];
+  if (data.reasons[day]) delete data.reasons[day][cid];
+  deleteReportFromCloud(day, cid);
+  saveData();
+  renderReportsList();
+}
+
+function renderAdminsList() {
+  var list = document.getElementById("adminsList");
+  list.innerHTML = "";
+  data.persons.forEach(function(p) {
+    var row = document.createElement("div");
+    row.className = "parent-row";
+    var badge = p.isSuper ? '<span class="super-badge">SUPER</span>' : (p.isAdmin ? '<span class="super-badge">ADMIN</span>' : "");
+    row.innerHTML = '<div class="parent-info"><div class="parent-name ' + (p.isAdmin || p.isSuper ? 'admin-name' : '') + '">' + ((p.isAdmin || p.isSuper) ? '👑 ' : '') + escapeHtml(p.name) + badge + '</div><div class="parent-meta">' + escapeHtml(p.phone) + '</div></div><div class="btn-group">' + (!p.isSuper ? '<button class="btn-admin" onclick="toggleAdmin(\'' + p.id + '\')">' + (p.isAdmin ? 'Ta bort admin' : 'Gör admin') + '</button>' : '') + '</div>';
+    list.appendChild(row);
+  });
+}
+
+function toggleAdmin(id) {
+  var p = data.persons.find(function(x) { return x.id === id; });
+  if (!p) return;
+  if (p.isSuper) { alert("Kan inte ändra super-admin"); return; }
+  p.isAdmin = !p.isAdmin;
+  saveData();
+  renderAdminsList();
+  if (p.isAdmin) {
+    var msg = "Hej " + p.name + "! Du är nu admin i Hxanat Mezamran.";
+    window.open("https://wa.me/" + normalizePhone(p.phone) + "?text=" + encodeURIComponent(msg), "_blank");
+  }
+}
+
+// ===== INSTÄLLNINGAR =====
+function renderSettings() {
+  var totalReports = Object.keys(data.attendance).reduce(function(sum, day) {
+    var att = data.attendance[day] || {};
+    return sum + Object.keys(att).filter(function(id) { return att[id] === "a" || att[id] === "f"; }).length;
+  }, 0);
+  var daysWithReports = Object.keys(data.attendance).filter(function(day) {
+    var att = data.attendance[day] || {};
+    return Object.keys(att).some(function(id) { return att[id] === "a" || att[id] === "f"; });
+  }).length;
+  document.getElementById("statsBox").innerHTML = '<div>👥 <b>Antal personer:</b> ' + data.persons.length + '</div><div>👶 <b>Antal barn:</b> ' + data.children.length + '</div><div>👑 <b>Antal admins:</b> ' + data.persons.filter(function(p) { return p.isAdmin || p.isSuper; }).length + '</div><div>📊 <b>Antal anmälningar:</b> ' + totalReports + '</div><div>📅 <b>Dagar med anmälningar:</b> ' + daysWithReports + '</div>';
+}
+
+async function manualRefresh() {
+  var box = document.getElementById("cloudStatus");
+  box.style.background = "#fff8e6";
+  box.style.borderLeftColor = "#ff9500";
+  box.textContent = "Hämtar från molnet...";
+  var ok = await loadFromCloud();
+  if (ok) {
+    box.style.background = "#e6ffe6";
+    box.style.borderLeftColor = "#34c759";
+    box.textContent = "✅ Data uppdaterad! Gå till Anmälningar eller Närvaro för att se den.";
+    renderSettings();
+    renderAdminDays();
+  } else {
+    box.style.background = "#ffe6e6";
+    box.style.borderLeftColor = "#ff3b30";
+    box.textContent = "❌ Kunde inte hämta data. Kontrollera anslutningen.";
+  }
+}
+
+async function testCloud() {
+  var box = document.getElementById("cloudStatus");
+  box.style.background = "#fff8e6";
+  box.style.borderLeftColor = "#ff9500";
+  box.textContent = "Testar...";
+  try {
+    var res = await db.from("reports").select("*").limit(1);
+    if (res.error) {
+      box.style.background = "#ffe6e6";
+      box.style.borderLeftColor = "#ff3b30";
+      box.textContent = "❌ Fel: " + res.error.message;
+    } else {
+      box.style.background = "#e6ffe6";
+      box.style.borderLeftColor = "#34c759";
+      box.textContent = "✅ Anslutning fungerar!";
+    }
+  } catch(e) {
+    box.style.background = "#ffe6e6";
+    box.style.borderLeftColor = "#ff3b30";
+    box.textContent = "❌ Fel: " + e.message;
+  }
+}
+
+function resetLocal() {
+  if (!confirm("Rensa lokal data? Allt hämtas om från molnet nästa gång du loggar in.")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function escapeAttr(s) { return String(s).replace(/'/g, "\\'"); }
+</script>
+</body>
+</html>
